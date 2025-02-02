@@ -16,32 +16,65 @@
 
     <h1 class="hidden">Herkkuja</h1>
 
+    <h2 id="welcome">Tervetuloa selailemaan herkkuja!</h2>
+
     <div class="hidden" id="sisältö"></div>
+    <br>
+    <button class="hidden" onclick="logOut()">Logout</button>
+
     </body>
     </center>
 
     <script>
+
+        const savedPin = localStorage.getItem("pinkoodi")
+        if (savedPin != null && savedPin !=undefined) {
+            showElements()
+        }
+
+        //---------Log out---------------------
+
+        function logOut() {
+            localStorage.clear()
+            window.location.reload()
+        }
+
         //---------pin koodin tarkistus----------------
         async function checkPin() {
-        var pin = document.getElementById("pin").value
-        const response = await fetch("http://localhost:3000/api/getpin")
-        const correctPin = await response.json()
+            var pin = document.getElementById("pin").value
+            const response = await fetch("http://localhost:3000/api/getpin")
+            const correctPin = await response.json()
 
-        if (pin == correctPin) {
-        var hiddenElements = document.getElementsByClassName("hidden")
-        
-        for (i=0; i < hiddenElements.length; i++){
-        hiddenElements[i].style.visibility = "visible"
+            if (pin == correctPin) {
+            // Kirjoittaminen localstorageen:
+            localStorage.setItem("pinkoodi", pin)
+            showElements()
 
-        document.getElementById("pin-div").style.visibility = "hidden"
+            // Tervehdysteksti esille
+            document.getElementById("welcome").style.visibility = "visible"
+            // Tervehdysteksti piiloon 4sek kuluttua
+            setTimeout(() => {
+            document.getElementById("welcome").style.visibility = "hidden"
+            }, 4000)
+
+            }
+            else {
+                alert("Väärä pinkoodi")
         }
-        }
-        else {
-            alert("Väärä pinkoodi")
-       }
     }
 
-        
+     //------------------Show elements----------------------
+     
+    function showElements() {        
+        var hiddenElements = document.getElementsByClassName("hidden")
+            
+            for (i=0; i < hiddenElements.length; i++){
+            hiddenElements[i].style.visibility = "visible"
+
+            document.getElementById("pin-div").style.visibility = "hidden"
+            }
+    }
+
     //------------------- Datan haku-----------------------
 
         async function fetchData() {                
